@@ -3,7 +3,9 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using NSQCore.System;
 
 namespace NSQCore
 {
@@ -14,6 +16,7 @@ namespace NSQCore
     {
         private readonly HttpClient _httpClient = new HttpClient();
         private readonly SemaphoreSlim _webClientLock = new SemaphoreSlim(1, 1);
+		private readonly ILoggerFactory _loggerFactory;
 
         private static readonly byte[] Empty = new byte[0];
 
@@ -22,9 +25,10 @@ namespace NSQCore
         /// </summary>
         /// <param name="host">The host name or IP address of the nsqd instance.</param>
         /// <param name="port">The HTTP port of the nsqd instance.</param>
-        public NsqProducer(string host, int port)
+        public NsqProducer(NsqConfiguration nsqConfiguration)
         {
-            _httpClient.BaseAddress = new Uri("http://" + host + ":" + port);
+            _httpClient.BaseAddress = new Uri(nsqConfiguration.ConnectionString);
+			_loggerFactory = nsqConfiguration.LoggerFactory is null ? ConsoleLogger.LoggerFactory : nsqConfiguration.LoggerFactory;
         }
 
         /// <summary>

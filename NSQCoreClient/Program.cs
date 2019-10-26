@@ -11,9 +11,9 @@ namespace NSQCoreClient
         private static void Main(string[] args)
         {
             
-            //Task.Run( PublishMessage).GetAwaiter().GetResult();
+            Task.Run( PublishMessage).GetAwaiter().GetResult();
 
-            Task.Run(LookupConsumeMessages).GetAwaiter().GetResult();
+            //Task.Run(LookupConsumeMessages).GetAwaiter().GetResult();
 
             Console.ReadKey();
         }
@@ -23,8 +23,10 @@ namespace NSQCoreClient
 
             Console.WriteLine("Publishing Message");
 
-            var prod = new NsqProducer("localhost", 4151);
-            await prod.PublishAsync("topic1", "hello world" );
+            var prod = new NsqProducer(new NsqConfiguration { ConnectionString = "http://localhost:4151" });
+			
+			//await prod.CreateTopicAsync("topic1");
+			await prod.PublishAsync("balls", "wang" );
             Console.WriteLine("Message Published");
         }
 
